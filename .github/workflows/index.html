@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MustLook - Web Address Collector</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f1f5f9;
+            color: #0f172a;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        header h1 {
+            color: #2563eb;
+            font-size: 2.5rem;
+            letter-spacing: 1px;
+        }
+
+        header p {
+            color: #64748b;
+            font-size: 0.95rem;
+            margin-top: 5px;
+        }
+
+        .form-card {
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            margin-bottom: 35px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 6px;
+            font-size: 0.9rem;
+        }
+
+        .form-group input, 
+        .form-group textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .form-group input:focus, 
+        .form-group textarea:focus {
+            border-color: #2563eb;
+        }
+
+        .color-row {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .color-picker {
+            width: 50px;
+            height: 40px;
+            border: none;
+            cursor: pointer;
+            border-radius: 6px;
+            background: none;
+        }
+
+        .btn-add {
+            width: 100%;
+            background-color: #2563eb;
+            color: #ffffff;
+            border: none;
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-add:hover {
+            background-color: #1d4ed8;
+        }
+
+        .links-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 20px;
+        }
+
+        .link-card {
+            background: #ffffff;
+            border-radius: 10px;
+            padding: 18px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            border: 1px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+        }
+
+        .delete-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #ef4444;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: bold;
+            line-height: 1;
+        }
+
+        .link-details {
+            font-size: 0.9rem;
+            color: #475569;
+            margin-bottom: 15px;
+            padding-right: 20px;
+            line-height: 1.4;
+            word-wrap: break-word;
+        }
+
+        .custom-site-btn {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            text-align: center;
+            color: #ffffff;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: opacity 0.2s, transform 0.1s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .custom-site-btn:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        .empty-msg {
+            text-align: center;
+            grid-column: 1 / -1;
+            color: #94a3b8;
+            font-size: 1rem;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>MustLook</h1>
+        <p>Aapke zaroori web addresses aur links ka sangrah</p>
+    </header>
+
+    <div class="form-card">
+        <div class="form-group">
+            <label for="btnName">Button Ka Naam:</label>
+            <input type="text" id="btnName" placeholder="Jaise: Google, YouTube, Mera Blog">
+        </div>
+
+        <div class="form-group">
+            <label for="webUrl">Website Ka Address (URL):</label>
+            <input type="text" id="webUrl" placeholder="https://example.com">
+        </div>
+
+        <div class="form-group">
+            <label for="webDetails">Website Ki Details (Short Info):</label>
+            <textarea id="webDetails" rows="2" placeholder="Is website par kya khaas hai..."></textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="btnColor">Button Ka Rang Chunein:</label>
+            <div class="color-row">
+                <input type="color" id="btnColor" class="color-picker" value="#2563eb">
+                <span id="colorHex">Selected Color</span>
+            </div>
+        </div>
+
+        <button class="btn-add" onclick="addLink()">Save Link</button>
+    </div>
+
+    <div class="links-grid" id="linksGrid">
+        <!-- Dynmic Links Yahan Aayenge -->
+    </div>
+</div>
+
+<script>
+    // Storage se links load karein
+    let savedLinks = JSON.parse(localStorage.getItem('mustlook_links')) || [];
+
+    // Page load hote hi render karein
+    document.addEventListener('DOMContentLoaded', renderLinks);
+
+    function addLink() {
+        const name = document.getElementById('btnName').value.trim();
+        let url = document.getElementById('webUrl').value.trim();
+        const details = document.getElementById('webDetails').value.trim();
+        const color = document.getElementById('btnColor').value;
+
+        if (!name || !url) {
+            alert('Kripya Button Ka Naam aur Website URL dono bharein!');
+            return;
+        }
+
+        // Agar user ne http/https nahi lagaya toh auto-add karein
+        if (!url.startsWith('http://') && !url.startsWith('https://')) {
+            url = 'https://' + url;
+        }
+
+        const linkObject = {
+            id: Date.now(),
+            name: name,
+            url: url,
+            details: details,
+            color: color
+        };
+
+        savedLinks.push(linkObject);
+        localStorage.setItem('mustlook_links', JSON.stringify(savedLinks));
+
+        // Form reset karein
+        document.getElementById('btnName').value = '';
+        document.getElementById('webUrl').value = '';
+        document.getElementById('webDetails').value = '';
+
+        renderLinks();
+    }
+
+    function renderLinks() {
+        const grid = document.getElementById('linksGrid');
+        grid.innerHTML = '';
+
+        if (savedLinks.length === 0) {
+            grid.innerHTML = '<div class="empty-msg">Abhi koi link save nahi kiya gaya hai. Uper diye form se naya link jodein!</div>';
+            return;
+        }
+
+        savedLinks.forEach(item => {
+            const card = document.createElement('div');
+            card.className = 'link-card';
+
+            const detailsText = item.details ? item.details : 'No details provided.';
+
+            card.innerHTML = `
+                <button class="delete-btn" onclick="deleteLink(${item.id})" title="Delete Link">✕</button>
+                <div class="link-details">${escapeHtml(detailsText)}</div>
+                <a href="${item.url}" target="_blank" class="custom-site-btn" style="background-color: ${item.color};">
+                    ${escapeHtml(item.name)}
+                </a>
+            `;
+
+            grid.appendChild(card);
+        });
+    }
+
+    function deleteLink(id) {
+        savedLinks = savedLinks.filter(item => item.id !== id);
+        localStorage.setItem('mustlook_links', JSON.stringify(savedLinks));
+        renderLinks();
+    }
+
+    // Security HTML escaping
+    function escapeHtml(str) {
+        return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+    }
+</script>
+
+</body>
+</html>
