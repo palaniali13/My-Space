@@ -1,0 +1,1016 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+<meta name="theme-color" content="#1e3c72"/>
+<title>Secure Loan Assessment Portal</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', 'Inter', system-ui, sans-serif; }
+
+  html, body {
+    min-height: 100%;
+    width: 100%;
+  }
+
+  body {
+    background: #f4f6fb;
+    color: #1a2233;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    min-height: 100dvh;
+    overflow-x: hidden;
+  }
+
+  /* ===== TOP HEADER BAR (full width) ===== */
+  .topbar {
+    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 60%, #764ba2 100%);
+    color: #fff;
+    padding: 18px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    box-shadow: 0 2px 12px rgba(30,60,114,0.25);
+    position: sticky;
+    top: 0;
+    z-index: 20;
+  }
+
+  .brand-logo {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: rgba(255,255,255,0.18);
+    border: 1px solid rgba(255,255,255,0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    font-weight: 900;
+    color: #fff;
+    position: relative;
+    flex-shrink: 0;
+  }
+
+  .secret-btn {
+    position: absolute;
+    inset: 0;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    z-index: 5;
+  }
+
+  .brand-text h1 {
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 0.2px;
+    line-height: 1.2;
+  }
+  .brand-text p {
+    font-size: 11px;
+    opacity: 0.8;
+    margin-top: 2px;
+  }
+
+  .secure-pill {
+    margin-left: auto;
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.25);
+    padding: 6px 10px;
+    border-radius: 20px;
+    font-size: 10px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    white-space: nowrap;
+  }
+
+  /* ===== MAIN FULL-SCREEN CONTENT ===== */
+  .main {
+    flex: 1;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .panel {
+    flex: 1;
+    width: 100%;
+    padding: 22px 20px 40px;
+    max-width: 720px;
+    margin: 0 auto;
+    animation: fadeUp 0.5s ease;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .page-title {
+    font-size: 22px;
+    font-weight: 800;
+    color: #1e3c72;
+    margin-bottom: 4px;
+    letter-spacing: -0.4px;
+  }
+
+  .page-sub {
+    font-size: 13px;
+    color: #6b7280;
+    margin-bottom: 22px;
+  }
+
+  /* ===== FORM ===== */
+  .form-group { margin-bottom: 18px; }
+
+  label {
+    display: block;
+    font-size: 11.5px;
+    color: #374151;
+    margin-bottom: 7px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+  }
+
+  input {
+    width: 100%;
+    padding: 15px 16px;
+    border: 1.5px solid #d7dce6;
+    border-radius: 12px;
+    font-size: 15px;
+    transition: 0.25s;
+    outline: none;
+    background: #fff;
+    color: #111827;
+    font-weight: 500;
+  }
+
+  input::placeholder { color: #9ca3af; font-weight: 400; }
+
+  input:focus {
+    border-color: #2a5298;
+    box-shadow: 0 0 0 4px rgba(42,82,152,0.12);
+  }
+
+  .btn {
+    width: 100%;
+    padding: 16px;
+    background: linear-gradient(135deg, #1e3c72 0%, #764ba2 100%);
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: 0.25s;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+    box-shadow: 0 8px 22px rgba(30,60,114,0.3);
+  }
+
+  .btn:hover { transform: translateY(-1px); box-shadow: 0 12px 26px rgba(30,60,114,0.4); }
+  .btn:active { transform: translateY(0); }
+
+  .error-msg {
+    display: none;
+    background: #ffebee;
+    color: #c62828;
+    padding: 12px 14px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 16px;
+    text-align: center;
+    border: 1px solid #ffcdd2;
+  }
+  .error-msg.show { display: block; animation: shake 0.4s; }
+
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-6px); }
+    75% { transform: translateX(6px); }
+  }
+
+  /* ===== PROCESSING ===== */
+  .processing { display: none; text-align: center; }
+
+  .progress-ring-container {
+    position: relative;
+    width: 180px;
+    height: 180px;
+    margin: 10px auto 28px;
+  }
+
+  .progress-ring { transform: rotate(-90deg); }
+
+  .progress-ring-bg {
+    fill: none;
+    stroke: #e5e7eb;
+    stroke-width: 10;
+  }
+
+  .progress-ring-fill {
+    fill: none;
+    stroke: url(#gradient);
+    stroke-width: 10;
+    stroke-linecap: round;
+    stroke-dasharray: 565.48;
+    stroke-dashoffset: 565.48;
+    transition: stroke-dashoffset 0.3s linear;
+  }
+
+  .progress-text {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+  }
+
+  .progress-percent {
+    font-size: 38px;
+    font-weight: 800;
+    background: linear-gradient(135deg, #1e3c72, #764ba2);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1;
+  }
+
+  .progress-label {
+    font-size: 10px;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-top: 6px;
+    font-weight: 700;
+  }
+
+  .process-title { font-size: 19px; font-weight: 700; color: #1e3c72; margin-bottom: 6px; }
+  .process-subtitle { font-size: 13px; color: #666; margin-bottom: 22px; }
+
+  .steps {
+    text-align: left;
+    background: #fff;
+    border-radius: 14px;
+    padding: 16px;
+    border: 1px solid #e8ecf3;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+  }
+
+  .step {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 11px 0;
+    font-size: 13px;
+    color: #999;
+    font-weight: 500;
+    transition: 0.4s;
+    border-bottom: 1px dashed #e5e7eb;
+  }
+  .step:last-child { border-bottom: none; }
+
+  .step-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #e5e7eb;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    flex-shrink: 0;
+    transition: 0.4s;
+    font-weight: 700;
+  }
+
+  .step.active { color: #2a5298; font-weight: 600; }
+  .step.active .step-icon {
+    background: linear-gradient(135deg, #1e3c72, #764ba2);
+    color: #fff;
+    animation: pulse 1s infinite;
+  }
+  .step.done { color: #2e7d32; }
+  .step.done .step-icon { background: #2e7d32; color: #fff; }
+
+  @keyframes pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(102,126,234,0.5); }
+    50% { box-shadow: 0 0 0 8px rgba(102,126,234,0); }
+  }
+
+  .spinner {
+    display: inline-block;
+    width: 12px; height: 12px;
+    border: 2px solid rgba(255,255,255,0.4);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ===== RESULT / PENDING ===== */
+  .result, .pending-screen { display: none; animation: fadeUp 0.6s ease; }
+
+  .status-badge, .pending-badge {
+    text-align: center;
+    padding: 24px 0 20px;
+    border-bottom: 1px solid #eef0f5;
+    margin-bottom: 22px;
+  }
+
+  .status-icon, .pending-icon {
+    width: 78px; height: 78px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 14px;
+    position: relative;
+  }
+
+  .status-icon {
+    background: linear-gradient(135deg, #ff6b6b, #ee5a6f);
+    box-shadow: 0 10px 30px rgba(238,90,111,0.35);
+  }
+  .pending-icon {
+    background: linear-gradient(135deg, #f5a623, #f7c948);
+    box-shadow: 0 10px 30px rgba(245,166,35,0.35);
+  }
+
+  .status-icon::after, .pending-icon::after {
+    content: '';
+    position: absolute;
+    inset: -8px;
+    border-radius: 50%;
+    animation: ripple 2s infinite;
+  }
+  .status-icon::after { border: 2px solid rgba(238,90,111,0.3); }
+  .pending-icon::after { border: 2px solid rgba(245,166,35,0.3); }
+
+  @keyframes ripple {
+    0% { transform: scale(1); opacity: 1; }
+    100% { transform: scale(1.3); opacity: 0; }
+  }
+
+  .status-icon svg, .pending-icon svg { width: 40px; height: 40px; color: #fff; }
+
+  .status-title { color: #ee5a6f; font-size: 19px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; }
+  .pending-title { color: #e67e22; font-size: 19px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; }
+  .status-sub, .pending-sub { color: #888; font-size: 12px; margin-top: 5px; letter-spacing: 0.4px; }
+
+  .message, .pending-greeting {
+    font-size: 15px;
+    color: #1e3c72;
+    line-height: 1.7;
+    margin-bottom: 14px;
+    font-weight: 600;
+    opacity: 0;
+    animation: typeShow 0.6s forwards;
+    animation-delay: 0.2s;
+  }
+
+  .highlight-box, .pending-box {
+    background: linear-gradient(135deg, #fff8e1, #fff3cd);
+    border-left: 4px solid #f5a623;
+    padding: 18px 18px;
+    border-radius: 10px;
+    margin: 16px 0;
+    font-size: 14px;
+    color: #5a4a1a;
+    line-height: 1.7;
+    opacity: 0;
+    animation: typeShow 0.6s forwards;
+    animation-delay: 0.7s;
+    box-shadow: 0 4px 14px rgba(245,166,35,0.12);
+  }
+  .highlight-box strong, .pending-box strong { color: #b8860b; font-weight: 700; }
+
+  .amount-badge {
+    display: inline-block;
+    background: #c0392b;
+    color: #fff;
+    padding: 3px 10px;
+    border-radius: 6px;
+    font-weight: 700;
+    font-size: 13px;
+    margin: 0 2px;
+  }
+  .amount-badge-pending {
+    display: inline-block;
+    background: #f5a623;
+    color: #fff;
+    padding: 3px 10px;
+    border-radius: 6px;
+    font-weight: 700;
+    font-size: 13px;
+    margin: 0 2px;
+  }
+  .date-badge {
+    display: inline-block;
+    background: #1e3c72;
+    color: #fff;
+    padding: 3px 10px;
+    border-radius: 6px;
+    font-weight: 700;
+    font-size: 13px;
+    margin: 0 2px;
+  }
+
+  .note, .pending-note {
+    background: linear-gradient(135deg, #e8f4fd, #d6eaf8);
+    border-left: 4px solid #2a5298;
+    padding: 16px 18px;
+    border-radius: 10px;
+    font-size: 13.5px;
+    color: #1e3c72;
+    line-height: 1.7;
+    margin-top: 14px;
+    opacity: 0;
+    animation: typeShow 0.6s forwards;
+    animation-delay: 1.3s;
+    box-shadow: 0 4px 14px rgba(42,82,152,0.1);
+  }
+  .note strong, .pending-note strong { color: #0d47a1; }
+
+  .timeline {
+    margin-top: 18px;
+    opacity: 0;
+    animation: typeShow 0.6s forwards;
+    animation-delay: 1.7s;
+  }
+
+  .timeline-title {
+    font-size: 11px;
+    font-weight: 700;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+  }
+
+  .timeline-item {
+    display: flex;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px dashed #e5e7eb;
+    font-size: 13px;
+  }
+  .timeline-item:last-child { border-bottom: none; }
+
+  .timeline-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: #f5a623;
+    margin-top: 5px;
+    flex-shrink: 0;
+    animation: pulseDot 1.5s infinite;
+  }
+  @keyframes pulseDot {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(245,166,35,0.5); }
+    50% { box-shadow: 0 0 0 6px rgba(245,166,35,0); }
+  }
+
+  .timeline-text { color: #555; }
+  .timeline-text strong { color: #1e3c72; }
+
+  .footer-text {
+    text-align: center;
+    margin-top: 22px;
+    color: #777;
+    font-size: 12px;
+    font-style: italic;
+    opacity: 0;
+    animation: typeShow 0.6s forwards;
+    animation-delay: 2s;
+  }
+
+  .ref-number {
+    text-align: center;
+    margin-top: 12px;
+    font-size: 11px;
+    color: #999;
+    letter-spacing: 0.8px;
+    opacity: 0;
+    animation: typeShow 0.6s forwards;
+    animation-delay: 2.3s;
+  }
+
+  @keyframes typeShow {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .back-btn {
+    display: block;
+    margin: 22px auto 0;
+    background: #fff;
+    color: #1e3c72;
+    border: 2px solid #1e3c72;
+    padding: 12px 26px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 700;
+    transition: 0.25s;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    opacity: 0;
+    animation: typeShow 0.6s forwards;
+    animation-delay: 2.6s;
+  }
+  .back-btn:hover {
+    background: linear-gradient(135deg, #1e3c72, #764ba2);
+    color: #fff;
+    border-color: transparent;
+    transform: translateY(-1px);
+  }
+
+  /* ===== FOOTER ===== */
+  .site-footer {
+    text-align: center;
+    padding: 18px 16px 24px;
+    color: #8a93a6;
+    font-size: 11.5px;
+    letter-spacing: 0.3px;
+    background: #fff;
+    border-top: 1px solid #eceff5;
+  }
+
+  /* ===== MODAL ===== */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(15,23,42,0.6);
+    backdrop-filter: blur(6px);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    animation: fadeIn 0.25s ease;
+  }
+  .modal-overlay.active { display: flex; }
+
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+  .modal {
+    background: #fff;
+    border-radius: 18px;
+    padding: 26px 22px;
+    max-width: 380px;
+    width: 100%;
+    box-shadow: 0 30px 60px rgba(0,0,0,0.3);
+    animation: popIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+    position: relative;
+  }
+
+  @keyframes popIn {
+    from { opacity: 0; transform: scale(0.85); }
+    to { opacity: 1; transform: scale(1); }
+  }
+
+  .modal-title { text-align: center; font-size: 17px; font-weight: 800; color: #1e3c72; margin-bottom: 4px; }
+  .modal-sub { text-align: center; font-size: 12px; color: #888; margin-bottom: 20px; }
+
+  .option-btn {
+    width: 100%;
+    padding: 14px;
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
+    background: #fafbfc;
+    cursor: pointer;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    transition: 0.25s;
+    text-align: left;
+  }
+  .option-btn:hover {
+    border-color: #2a5298;
+    background: #f0f3ff;
+    transform: translateX(3px);
+  }
+  .option-btn.selected {
+    border-color: #2a5298;
+    background: linear-gradient(135deg, #1e3c72, #764ba2);
+    color: #fff;
+  }
+  .option-btn.selected .option-desc { color: rgba(255,255,255,0.85); }
+
+  .option-icon {
+    width: 42px; height: 42px;
+    border-radius: 11px;
+    background: linear-gradient(135deg, #1e3c72, #764ba2);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    font-weight: 800;
+    flex-shrink: 0;
+  }
+  .option-btn.selected .option-icon { background: rgba(255,255,255,0.25); }
+
+  .option-name { font-size: 14.5px; font-weight: 700; margin-bottom: 2px; }
+  .option-desc { font-size: 11px; color: #888; }
+
+  .modal-confirm {
+    width: 100%;
+    padding: 13px;
+    background: linear-gradient(135deg, #1e3c72, #764ba2);
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: 0.25s;
+  }
+  .modal-confirm:hover { transform: translateY(-1px); box-shadow: 0 8px 20px rgba(30,60,114,0.35); }
+
+  .modal-close {
+    position: absolute;
+    top: 10px;
+    right: 12px;
+    background: #f0f0f0;
+    border: none;
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 16px;
+    color: #666;
+    transition: 0.25s;
+  }
+  .modal-close:hover { background: #e0e0e0; }
+
+  /* ===== DESKTOP ENHANCEMENT ===== */
+  @media (min-width: 700px) {
+    .panel { padding: 36px 40px 60px; }
+    .page-title { font-size: 26px; }
+    .brand-text h1 { font-size: 17px; }
+  }
+
+  @media (max-width: 420px) {
+    .secure-pill { display: none; }
+    .panel { padding: 18px 16px 36px; }
+    .page-title { font-size: 20px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== TOP BAR ===== -->
+<div class="topbar">
+  <div class="brand-logo">
+    L
+    <button class="secret-btn" id="secretBtn" aria-label="Select Option"></button>
+  </div>
+  <div class="brand-text">
+    <h1>Secure Loan Portal</h1>
+    <p>AI-Powered Eligibility Assessment</p>
+  </div>
+  <div class="secure-pill">🔒 256-bit SSL</div>
+</div>
+
+<!-- ===== MAIN ===== -->
+<div class="main">
+
+  <!-- FORM -->
+  <div class="panel" id="formSection">
+    <div class="page-title">Loan Eligibility Check</div>
+    <p class="page-sub">Enter your details below to check your loan eligibility.</p>
+
+    <div class="error-msg" id="errorMsg">⚠️ Please choose your option first</div>
+
+    <form id="loanForm">
+      <div class="form-group">
+        <label for="mobile">Mobile Number</label>
+        <input type="tel" id="mobile" placeholder="Enter 10-digit mobile number" maxlength="10" required>
+      </div>
+
+      <div class="form-group">
+        <label for="nbfc">Last Applied Loan NBFC Name</label>
+        <input type="text" id="nbfc" placeholder="Muran Finance Rs. 50000" required>
+      </div>
+
+      <div class="form-group">
+        <label for="date">Applied Date</label>
+        <input type="date" id="date" required>
+      </div>
+
+      <button type="submit" class="btn">Check Eligibility</button>
+    </form>
+  </div>
+
+  <!-- PROCESSING -->
+  <div class="panel processing" id="processingSection">
+    <div class="progress-ring-container">
+      <svg class="progress-ring" width="180" height="180" viewBox="0 0 200 200">
+        <defs>
+          <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#1e3c72"/>
+            <stop offset="100%" stop-color="#764ba2"/>
+          </linearGradient>
+        </defs>
+        <circle class="progress-ring-bg" cx="100" cy="100" r="90"/>
+        <circle class="progress-ring-fill" id="progressFill" cx="100" cy="100" r="90"/>
+      </svg>
+      <div class="progress-text">
+        <div class="progress-percent" id="progressPercent">0%</div>
+        <div class="progress-label">Analyzing</div>
+      </div>
+    </div>
+
+    <div class="process-title">Processing Your Request</div>
+    <div class="process-subtitle">Please wait while we verify your details...</div>
+
+    <div class="steps">
+      <div class="step" id="step1"><div class="step-icon">1</div><span>Establishing secure connection...</span></div>
+      <div class="step" id="step2"><div class="step-icon">2</div><span>Verifying your identity...</span></div>
+      <div class="step" id="step3"><div class="step-icon">3</div><span>Checking credit history &amp; CIBIL score...</span></div>
+      <div class="step" id="step4"><div class="step-icon">4</div><span>Analyzing loan eligibility...</span></div>
+      <div class="step" id="step5"><div class="step-icon">5</div><span>Finalizing assessment report...</span></div>
+    </div>
+  </div>
+
+  <!-- RESULT (Kisht) -->
+  <div class="panel result" id="resultSection">
+    <div class="status-badge">
+      <div class="status-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <polyline points="12 6 12 12 16 14"></polyline>
+        </svg>
+      </div>
+      <div class="status-title">Application Pending</div>
+      <div class="status-sub">Reference ID: <span id="refId">REF-000000</span></div>
+    </div>
+
+    <div class="message">Dear Applicant,</div>
+
+    <div class="highlight-box">
+      Your Application is still pending because your <strong>Open Loan From Chhola One Finance</strong> was <strong>Bounced</strong>.
+      <br><br>
+      Please Pay <span class="amount-badge">₹ 722</span> to process in next <strong>2 Days</strong>.
+    </div>
+
+    <div class="note">
+      ✅ After you pay your Chhola One Finance outstanding of <strong>₹ 722</strong>, you will receive your new loan offer of <strong>₹ 50,000</strong> in next <strong>2 Days</strong>.
+    </div>
+
+    <div class="footer-text">
+      Thank you for your patience and cooperation.<br>
+      — Loan Disbursement Team
+    </div>
+
+    <div class="ref-number">Generated on <span id="genDate"></span></div>
+
+    <button class="back-btn" onclick="resetForm()">Submit Another Application</button>
+  </div>
+
+  <!-- PENDING (Muran) -->
+  <div class="panel pending-screen" id="pendingSection">
+    <div class="pending-badge">
+      <div class="pending-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <polyline points="12 6 12 12 16 14"></polyline>
+        </svg>
+      </div>
+      <div class="pending-title">Application Pending</div>
+      <div class="pending-sub">Reference ID: <span id="pendingRefId">REF-000000</span></div>
+    </div>
+
+    <div class="pending-greeting">Dear Applicant,</div>
+
+    <div class="pending-box">
+      Your <strong>Muran Finance</strong> loan of <span class="amount-badge-pending">₹ 50,000</span> is <strong>Pending</strong> for <span class="date-badge">7 October 2026</span> for some steps at your end to be completed.
+    </div>
+
+    <div class="pending-note">
+      ⏳ Please complete the required formalities before the scheduled date to ensure smooth disbursement of your loan amount.
+    </div>
+
+    <div class="timeline">
+      <div class="timeline-title">Pending Actions</div>
+      <div class="timeline-item">
+        <div class="timeline-dot"></div>
+        <div class="timeline-text"><strong>Document Verification</strong> — In progress</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-dot"></div>
+        <div class="timeline-text"><strong>KYC Confirmation</strong> — Awaiting your response</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-dot"></div>
+        <div class="timeline-text"><strong>Final Approval</strong> — Scheduled for 7 October 2026</div>
+      </div>
+    </div>
+
+    <div class="footer-text">
+      Thank you for your patience and cooperation.<br>
+      — Muran Finance Team
+    </div>
+
+    <div class="ref-number">Generated on <span id="pendingGenDate"></span></div>
+
+    <button class="back-btn" onclick="resetForm()">Submit Another Application</button>
+  </div>
+
+</div>
+
+<!-- ===== FOOTER ===== -->
+<div class="site-footer">© 2026 Secure Loan Portal • All Rights Reserved</div>
+
+<!-- ===== OPTION MODAL ===== -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <button class="modal-close" id="modalClose">×</button>
+    <div class="modal-title">Choose Your Option</div>
+    <div class="modal-sub">Select the loan provider to continue</div>
+
+    <button class="option-btn" data-option="muran" id="optMuran">
+      <div class="option-icon">M</div>
+      <div>
+        <div class="option-name">Muran</div>
+        <div class="option-desc">Muran Finance Loan Application</div>
+      </div>
+    </button>
+
+    <button class="option-btn" data-option="kisht" id="optKisht">
+      <div class="option-icon">K</div>
+      <div>
+        <div class="option-name">Kisht</div>
+        <div class="option-desc">Kisht Finance Loan Application</div>
+      </div>
+    </button>
+
+    <button class="modal-confirm" id="modalConfirm">Confirm Selection</button>
+  </div>
+</div>
+
+<script>
+  const form = document.getElementById('loanForm');
+  const formSection = document.getElementById('formSection');
+  const processingSection = document.getElementById('processingSection');
+  const resultSection = document.getElementById('resultSection');
+  const pendingSection = document.getElementById('pendingSection');
+  const progressFill = document.getElementById('progressFill');
+  const progressPercent = document.getElementById('progressPercent');
+  const errorMsg = document.getElementById('errorMsg');
+
+  const modalOverlay = document.getElementById('modalOverlay');
+  const secretBtn = document.getElementById('secretBtn');
+  const modalClose = document.getElementById('modalClose');
+  const modalConfirm = document.getElementById('modalConfirm');
+  const optMuran = document.getElementById('optMuran');
+  const optKisht = document.getElementById('optKisht');
+
+  let selectedOption = null;
+  const CIRCUMFERENCE = 2 * Math.PI * 90;
+
+  secretBtn.addEventListener('click', function(e) {
+    e.stopPropagation();
+    modalOverlay.classList.add('active');
+    errorMsg.classList.remove('show');
+  });
+
+  modalClose.addEventListener('click', () => modalOverlay.classList.remove('active'));
+  modalOverlay.addEventListener('click', (e) => {
+    if (e.target === modalOverlay) modalOverlay.classList.remove('active');
+  });
+
+  optMuran.addEventListener('click', () => {
+    selectedOption = 'muran';
+    optMuran.classList.add('selected');
+    optKisht.classList.remove('selected');
+  });
+
+  optKisht.addEventListener('click', () => {
+    selectedOption = 'kisht';
+    optKisht.classList.add('selected');
+    optMuran.classList.remove('selected');
+  });
+
+  modalConfirm.addEventListener('click', () => {
+    if (!selectedOption) { alert('Please select one option first!'); return; }
+    modalOverlay.classList.remove('active');
+  });
+
+  form.addEventListener('submit', function(e) {
+    e.preventDefault();
+    const mobile = document.getElementById('mobile').value.trim();
+    const nbfc = document.getElementById('nbfc').value.trim();
+    const date = document.getElementById('date').value;
+
+    if (!/^\d{10}$/.test(mobile)) { alert('Please enter a valid 10-digit mobile number.'); return; }
+    if (!nbfc) { alert('Please enter the NBFC name.'); return; }
+    if (!date) { alert('Please select the applied date.'); return; }
+
+    if (!selectedOption) {
+      errorMsg.classList.add('show');
+      setTimeout(() => errorMsg.classList.remove('show'), 3000);
+      return;
+    }
+
+    formSection.style.display = 'none';
+    processingSection.style.display = 'block';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    startProcessing();
+  });
+
+  function startProcessing() {
+    const totalDuration = 15000;
+    const startTime = Date.now();
+    const steps = [
+      { id: 'step1', start: 0, end: 3000 },
+      { id: 'step2', start: 3000, end: 6000 },
+      { id: 'step3', start: 6000, end: 9000 },
+      { id: 'step4', start: 9000, end: 12000 },
+      { id: 'step5', start: 12000, end: 15000 }
+    ];
+
+    function updateStepState(elapsed) {
+      steps.forEach((step) => {
+        const el = document.getElementById(step.id);
+        const stepNum = step.id.replace('step', '');
+        el.classList.remove('active', 'done');
+        if (elapsed < step.start) {
+          el.querySelector('.step-icon').innerHTML = stepNum;
+        } else if (elapsed >= step.start && elapsed < step.end) {
+          el.classList.add('active');
+          el.querySelector('.step-icon').innerHTML = '<span class="spinner"></span>';
+        } else {
+          el.classList.add('done');
+          el.querySelector('.step-icon').innerHTML = '✓';
+        }
+      });
+    }
+
+    function animate() {
+      const elapsed = Date.now() - startTime;
+      const progress = Math.min(elapsed / totalDuration, 1);
+      const percent = Math.floor(progress * 100);
+      const offset = CIRCUMFERENCE - (progress * CIRCUMFERENCE);
+      progressFill.style.strokeDashoffset = offset;
+      progressPercent.textContent = percent + '%';
+      updateStepState(elapsed);
+
+      if (progress < 1) requestAnimationFrame(animate);
+      else setTimeout(showResult, 400);
+    }
+    animate();
+  }
+
+  function showResult() {
+    processingSection.style.display = 'none';
+    const now = new Date();
+    const dateStr = now.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })
+      + ' • ' + now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+
+    if (selectedOption === 'muran') {
+      pendingSection.style.display = 'block';
+      const refId = 'MUR-' + Math.floor(100000 + Math.random() * 900000);
+      document.getElementById('pendingRefId').textContent = refId;
+      document.getElementById('pendingGenDate').textContent = dateStr;
+    } else {
+      resultSection.style.display = 'block';
+      const refId = 'KSH-' + Math.floor(100000 + Math.random() * 900000);
+      document.getElementById('refId').textContent = refId;
+      document.getElementById('genDate').textContent = dateStr;
+    }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function resetForm() {
+    form.reset();
+    resultSection.style.display = 'none';
+    pendingSection.style.display = 'none';
+    formSection.style.display = 'block';
+
+    for (let i = 1; i <= 5; i++) {
+      const el = document.getElementById('step' + i);
+      el.classList.remove('active', 'done');
+      el.querySelector('.step-icon').innerHTML = i;
+    }
+    progressFill.style.strokeDashoffset = CIRCUMFERENCE;
+    progressPercent.textContent = '0%';
+    selectedOption = null;
+    optMuran.classList.remove('selected');
+    optKisht.classList.remove('selected');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+</script>
+
+</body>
+</html>
